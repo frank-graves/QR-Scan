@@ -1,4 +1,3 @@
-// org/foss/lens/domain/Archive.kt
 package org.foss.lens.domain
 
 /**
