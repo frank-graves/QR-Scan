@@ -1,4 +1,4 @@
-// org/foss/lens/presentation/LensActivity.kt
+// app/src/main/java/org/foss/lens/presentation/LensActivity.kt
 package org.foss.lens.presentation
 
 import android.Manifest
@@ -80,6 +80,7 @@ class LensActivity : AppCompatActivity() {
         when (state) {
             is ScanState.Idle -> {
                 binding.statusText.text = getString(R.string.status_idle)
+                binding.statusText.setTextColor(ContextCompat.getColor(this, R.color.textPrimary))
                 binding.resultText.visibility = View.GONE
                 binding.statusText.animate()
                     .alpha(1f)
@@ -88,6 +89,7 @@ class LensActivity : AppCompatActivity() {
             }
             is ScanState.Detecting -> {
                 binding.statusText.text = getString(R.string.status_detecting)
+                binding.statusText.setTextColor(ContextCompat.getColor(this, R.color.textPrimary))
                 binding.resultText.visibility = View.GONE
                 binding.statusText.animate()
                     .scaleX(1.05f)
@@ -105,6 +107,7 @@ class LensActivity : AppCompatActivity() {
             }
             is ScanState.Success -> {
                 binding.statusText.text = getString(R.string.status_success)
+                binding.statusText.setTextColor(ContextCompat.getColor(this, R.color.textPrimary))
                 binding.resultText.text = state.codex.payload
                 binding.resultText.visibility = View.VISIBLE
                 binding.resultText.animate()

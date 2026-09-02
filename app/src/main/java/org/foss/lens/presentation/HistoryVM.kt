@@ -1,4 +1,4 @@
-// org/foss/lens/presentation/HistoryVM.kt
+// app/src/main/java/org/foss/lens/presentation/HistoryVM.kt
 package org.foss.lens.presentation
 
 import androidx.lifecycle.ViewModel
@@ -29,9 +29,5 @@ class HistoryVM(private val archive: Archive) : ViewModel() {
             archive.clear()
             load()
         }
-    }
-
-    fun notifyNewEntry() {
-        load()
     }
 }
