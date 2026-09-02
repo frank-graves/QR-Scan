@@ -60,7 +60,7 @@ class CameraLens(
                 if (chaosEnabled && frameCounter.incrementAndGet() % 10 == 0) {
                     throw IllegalStateException("chaos-camera-fail")
                 }
-                val result = decoder.decode(imageProxy)
+                val result = decoder.decode(imageProxy, rotate = true)
                 GoldenSignals.analyzerOk()
                 if (result != null) trySend(ScanState.Success(result))
             } catch (e: Exception) {
