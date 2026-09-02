@@ -1,0 +1,19 @@
+R_DEF: Internal format may change without notice
+local
+color accent
+color background
+color surface
+color textPrimary
+color textSecondary
+color white
+drawable ic_launcher
+id historyRecycler
+id previewView
+id resultText
+id statusLayout
+id statusText
+layout activity_lens
+layout item_codex
+mipmap ic_launcher
+mipmap ic_launcher_round
+string status_idle
