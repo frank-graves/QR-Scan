@@ -1,0 +1,10 @@
+[
+    {
+        "merged": "org.foss.lens.app-mergeDebugResources-3:/layout/activity_lens.xml",
+        "source": "org.foss.lens.app-main-6:/layout/activity_lens.xml"
+    },
+    {
+        "merged": "org.foss.lens.app-mergeDebugResources-3:/layout/item_codex.xml",
+        "source": "org.foss.lens.app-main-6:/layout/item_codex.xml"
+    }
+]

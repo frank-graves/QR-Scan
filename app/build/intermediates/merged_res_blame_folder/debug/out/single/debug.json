@@ -1,0 +1,22 @@
+[
+    {
+        "merged": "org.foss.lens.app-merged_res-4:/drawable_ic_launcher.xml.flat",
+        "source": "org.foss.lens.app-main-6:/drawable/ic_launcher.xml"
+    },
+    {
+        "merged": "org.foss.lens.app-merged_res-4:/mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "org.foss.lens.app-main-6:/mipmap-anydpi-v26/ic_launcher.xml"
+    },
+    {
+        "merged": "org.foss.lens.app-merged_res-4:/layout_activity_lens.xml.flat",
+        "source": "org.foss.lens.app-main-6:/layout/activity_lens.xml"
+    },
+    {
+        "merged": "org.foss.lens.app-merged_res-4:/layout_item_codex.xml.flat",
+        "source": "org.foss.lens.app-main-6:/layout/item_codex.xml"
+    },
+    {
+        "merged": "org.foss.lens.app-merged_res-4:/mipmap-anydpi-v26_ic_launcher_round.xml.flat",
+        "source": "org.foss.lens.app-main-6:/mipmap-anydpi-v26/ic_launcher_round.xml"
+    }
+]
