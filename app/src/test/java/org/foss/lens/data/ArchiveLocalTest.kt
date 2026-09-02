@@ -1,4 +1,3 @@
-// app/src/test/java/org/foss/lens/data/ArchiveLocalTest.kt (nuevo)
 package org.foss.lens.data
 
 import android.content.Context
@@ -52,7 +51,7 @@ class ArchiveLocalTest {
         var all = archiveLocal.all()
         assertTrue(all.isEmpty())
 
-        // Repoblar y limpiar todo
+        // Repopulate and clear everything
         archiveLocal.save(Codex(payload = "a", format = "QR", timestamp = Instant.now()))
         archiveLocal.save(Codex(payload = "b", format = "QR", timestamp = Instant.now()))
         archiveLocal.clear()

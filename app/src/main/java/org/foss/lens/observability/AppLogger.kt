@@ -1,4 +1,3 @@
-// app/src/main/java/org/foss/lens/observability/AppLogger.kt
 package org.foss.lens.observability
 
 import android.content.Context

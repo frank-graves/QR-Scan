@@ -22,7 +22,11 @@ abstract class ArchiveDatabase : RoomDatabase() {
                     context.applicationContext,
                     ArchiveDatabase::class.java,
                     "lens_archive.db"
-                ).build().also { instance = it }
+                )
+                // Destructive migration por diseño: el archivo es un historial local desechable,
+                // no datos del usuario. Si v2 rompe el schema, se limpia y se regenera.
+                .fallbackToDestructiveMigration()
+                .build().also { instance = it }
             }
         }
     }

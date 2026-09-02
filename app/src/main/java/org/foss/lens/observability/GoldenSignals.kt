@@ -1,4 +1,3 @@
-// app/src/main/java/org/foss/lens/observability/GoldenSignals.kt
 package org.foss.lens.observability
 
 object GoldenSignals {

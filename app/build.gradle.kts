@@ -5,6 +5,7 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("kotlin-kapt")
+    id("io.gitlab.arturbosch.detekt") version "1.23.6"
 }
 
 android {
@@ -17,6 +18,7 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         // Ampliar a inglés y español
         resourceConfigurations += listOf("en", "es")
         multiDexEnabled = true
@@ -82,6 +84,11 @@ android {
     }
 }
 
+detekt {
+    config.setFrom(files("$rootDir/config/detekt/detekt.yml"))
+    buildUponDefaultConfig = false
+}
+
 dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
 
@@ -111,5 +118,6 @@ dependencies {
     testImplementation("androidx.test:core:1.5.0") // Para ApplicationProvider
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
+    androidTestImplementation("androidx.test:rules:1.5.0")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
 }

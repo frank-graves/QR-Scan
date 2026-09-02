@@ -1,4 +1,3 @@
-// app/src/main/java/org/foss/lens/infrastructure/CodexDecoder.kt
 package org.foss.lens.infrastructure
 
 import androidx.camera.core.ImageProxy

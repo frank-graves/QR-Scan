@@ -1,4 +1,3 @@
-// app/src/main/java/org/foss/lens/infrastructure/CameraLens.kt (modificado en analyzer)
 package org.foss.lens.infrastructure
 
 import android.Manifest
@@ -35,15 +34,23 @@ class CameraLens(
     private var cameraProvider: ProcessCameraProvider? = null
     private val analyzerExecutor = Executors.newSingleThreadExecutor()
     private val chaosPrefs: SharedPreferences = context.getSharedPreferences("lens_flags", Context.MODE_PRIVATE)
+
+    // Fault injection to exercise the analyzer error path without broken hardware.
+    // The first operand (BuildConfig.DEBUG) disables this in release: the compiler
+    // folds it to false and the analyzer block stays dead in production.
     private val chaosEnabled: Boolean = BuildConfig.DEBUG && chaosPrefs.getBoolean("chaos-camera-fail", false)
+
     private val frameCounter = AtomicInteger(0)
 
     override suspend fun requestPermissions(): Boolean =
         ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
 
+    internal open fun cameraProviderFuture(): ListenableFuture<ProcessCameraProvider> =
+        ProcessCameraProvider.getInstance(context)
+
     override fun start(): Flow<ScanState> = callbackFlow {
         val provider = try {
-            ProcessCameraProvider.getInstance(context).await()
+            cameraProviderFuture().await()
         } catch (e: Exception) {
             close(e)
             return@callbackFlow
@@ -57,6 +64,8 @@ class CameraLens(
 
         val analyzer = ImageAnalysis.Analyzer { imageProxy ->
             try {
+                // Every 10 frames in DEBUG (and only when the SharedPreferences flag is set)
+                // we throw on purpose to exercise ScanState.Error. It never runs in release.
                 if (chaosEnabled && frameCounter.incrementAndGet() % 10 == 0) {
                     throw IllegalStateException("chaos-camera-fail")
                 }
@@ -65,7 +74,7 @@ class CameraLens(
                 if (result != null) trySend(ScanState.Success(result))
             } catch (e: Exception) {
                 GoldenSignals.analyzerError()
-                trySend(ScanState.Error(e, "Error en análisis"))
+                trySend(ScanState.Error(e, "Analysis error"))
             } finally {
                 imageProxy.close()
             }
@@ -85,7 +94,7 @@ class CameraLens(
             cameraProvider = null
             analyzerExecutor.shutdown()
         }
-    }.catch { e -> emit(ScanState.Error(e, "Flujo de cámara falló")) }
+    }.catch { e -> emit(ScanState.Error(e, "Camera flow failed")) }
         .flowOn(Dispatchers.IO)
 
     override fun stop() {

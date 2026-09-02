@@ -1,4 +1,3 @@
-// app/src/main/java/org/foss/lens/ScribeApplication.kt (modificado)
 package org.foss.lens
 
 import android.app.Application

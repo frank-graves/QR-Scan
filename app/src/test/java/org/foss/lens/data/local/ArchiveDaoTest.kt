@@ -1,4 +1,3 @@
-// app/src/test/java/org/foss/lens/data/local/ArchiveDaoTest.kt (ampliado)
 package org.foss.lens.data.local
 
 import android.content.Context
@@ -62,7 +61,7 @@ class ArchiveDaoTest {
         assertTrue(all.isEmpty())
     }
 
-    // Test adicional: orden descendente por timestamp
+    // Additional test: descending timestamp order
     @Test
     fun orderByTimestampDesc() = runBlockingTest {
         val now = Instant.now()

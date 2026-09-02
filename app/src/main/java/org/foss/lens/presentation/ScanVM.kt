@@ -1,4 +1,3 @@
-// app/src/main/java/org/foss/lens/presentation/ScanVM.kt
 package org.foss.lens.presentation
 
 import androidx.lifecycle.ViewModel
