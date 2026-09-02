@@ -2,8 +2,8 @@
 import java.util.Properties
 
 plugins {
-    id("com.android.application")
-    id("org.jetbrains.kotlin.android")
+    id("com.android.application") version "8.1.0"          // <--- versión añadida
+    id("org.jetbrains.kotlin.android") version "1.9.0"     // <--- versión añadida
     id("kotlin-kapt")
     id("io.gitlab.arturbosch.detekt") version "1.23.6"
 }
@@ -19,14 +19,12 @@ android {
         versionCode = 1
         versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        // Ampliar a inglés y español
         resourceConfigurations += listOf("en", "es")
         multiDexEnabled = true
     }
 
     signingConfigs {
         create("release") {
-            // Leer credenciales desde keystore.properties (en la raíz del proyecto)
             val propertiesFile = rootProject.file("keystore.properties")
             if (propertiesFile.exists()) {
                 val props = Properties()
@@ -36,7 +34,6 @@ android {
                 keyAlias = props["keyAlias"] as String
                 keyPassword = props["keyPassword"] as String
             } else {
-                // Fallback para debug (no debería usarse en release)
                 logger.warn("keystore.properties no encontrado, usando debug signing para release")
                 storeFile = file("debug.keystore")
                 storePassword = "android"
@@ -112,10 +109,9 @@ dependencies {
 
     implementation("com.google.zxing:core:3.5.2")
 
-    // Tests
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.robolectric:robolectric:4.11.1")
-    testImplementation("androidx.test:core:1.5.0") // Para ApplicationProvider
+    testImplementation("androidx.test:core:1.5.0")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test:rules:1.5.0")
