@@ -16,4 +16,12 @@ class AppLoggerRedactionTest {
     fun leavesNormalTextAlone() {
         assertEquals("status idle", AppLogger.redactPii("status idle"))
     }
+
+    @Test
+    fun redactsColonSeparator() {
+        assertEquals(
+            "token=[REDACTED]",
+            AppLogger.redactPii("token: abc123")
+        )
+    }
 }

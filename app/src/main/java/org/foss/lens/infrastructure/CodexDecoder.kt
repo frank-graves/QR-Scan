@@ -25,7 +25,6 @@ class CodexDecoder {
 
         val yData = ByteArray(width * height)
         if (rowStride == width && pixelStride == 1) {
-            val pos = buffer.position()
             buffer.get(yData, 0, width * height)
         } else {
             val bufferPos = buffer.position()
@@ -73,7 +72,7 @@ class CodexDecoder {
                     for (y in 0 until outH) {
                         for (x in 0 until outW) {
                             val inX = y
-                            val inY = width - 1 - x
+                            val inY = height - 1 - x
                             out[y * outW + x] = yData[inY * width + inX]
                         }
                     }
@@ -85,7 +84,7 @@ class CodexDecoder {
                     val out = ByteArray(outW * outH)
                     for (y in 0 until outH) {
                         for (x in 0 until outW) {
-                            val inX = height - 1 - y
+                            val inX = width - 1 - y
                             val inY = x
                             out[y * outW + x] = yData[inY * width + inX]
                         }
