@@ -25,4 +25,14 @@ class LensActivityPermissionTest {
     @Before
     fun revokeCameraPermission() {
         instrumentation.uiAutomation.executeShellCommand(
-            "pm revoke $packageName ${Man
+            "pm revoke $packageName android.permission.CAMERA"
+        )
+    }
+
+    @Test
+    fun permissionDeniedShowsError() {
+        ActivityScenario.launch(LensActivity::class.java).use {
+            onView(withId(R.styleable.AppCompatTheme_windowActionBar)) // Ajusta según tu vista de error
+        }
+    }
+}
