@@ -2,9 +2,9 @@
 import java.util.Properties
 
 plugins {
-    id("com.android.application") version "8.1.0"          // <--- versión añadida
-    id("org.jetbrains.kotlin.android") version "1.9.0"     // <--- versión añadida
-    id("kotlin-kapt")
+    id("com.android.application") version "8.1.0"
+    id("org.jetbrains.kotlin.android") version "1.9.0"
+    kotlin("kapt") version "1.9.0"                    // <--- reemplaza id("kotlin-kapt")
     id("io.gitlab.arturbosch.detekt") version "1.23.6"
 }
 

@@ -4,7 +4,7 @@
             "outputFile": "org.foss.lens.app-mergeDebugResources-2:/values-v17/values-v17.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\Administrador\\.gradle\\caches\\transforms-3\\203633569084268d91b86896c05ec691\\transformed\\appcompat-1.6.1\\res\\values-v17\\values-v17.xml",
+                    "source": "C:\\Users\\Administrador\\.gradle\\caches\\transforms-3\\ba90443cf78f27e729eedc70d8d1e330\\transformed\\appcompat-1.6.1\\res\\values-v17\\values-v17.xml",
                     "from": {
                         "startLines": "2,5,9,12,15,18,22,25,29,33,37,40,43,46,50,53,57",
                         "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
