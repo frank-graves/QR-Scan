@@ -1,11 +1,4 @@
-<!-- res/values/strings.xml -->
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Lens</string>
-    <string name="status_idle">Esperando...</string>
-    <string name="status_detecting">Buscando códigos...</string>
-    <string name="status_success">¡Código detectado!</string>
-    <string name="status_error">Error: %s</string>
-    <string name="permission_denied">Permiso de cámara denegado. Concede acceso desde ajustes.</string>
-    <string name="history_empty">Sin códigos escaneados</string>
+    <string name="status_idle">Esperando cámara...</string>
 </resources>

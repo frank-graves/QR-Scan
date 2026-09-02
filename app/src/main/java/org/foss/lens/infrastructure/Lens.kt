@@ -12,4 +12,4 @@ import kotlinx.coroutines.flow.Flow
 interface Lens {
     fun start(): Flow<ScanState>
     fun stop()
-    suspend
+}
