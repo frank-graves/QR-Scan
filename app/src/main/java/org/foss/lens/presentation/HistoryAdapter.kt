@@ -1,4 +1,3 @@
-// app/src/main/java/org/foss/lens/presentation/HistoryAdapter.kt
 package org.foss.lens.presentation
 
 import android.view.LayoutInflater

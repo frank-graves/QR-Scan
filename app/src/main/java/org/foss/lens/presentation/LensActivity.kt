@@ -1,4 +1,3 @@
-// app/src/main/java/org/foss/lens/presentation/LensActivity.kt
 package org.foss.lens.presentation
 
 import android.Manifest
@@ -126,7 +125,7 @@ class LensActivity : AppCompatActivity() {
                 historyVM.load()
             }
             is ScanState.Error -> {
-                binding.statusText.text = getString(R.string.status_error, state.message ?: "Desconocido")
+                binding.statusText.text = getString(R.string.status_error, state.message ?: "Unknown")
                 binding.resultText.visibility = View.GONE
                 binding.statusText.setTextColor(ContextCompat.getColor(this, R.color.error))
             }
