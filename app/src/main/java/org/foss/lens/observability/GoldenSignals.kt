@@ -10,5 +10,4 @@ object GoldenSignals {
         AppLogger.recordMetric("saturation_mem_kb", memKb.toDouble())
         AppLogger.recordMetric("saturation_battery_pct", batteryPct.toDouble())
     }
-    fun burnCritical(nowMs: Long) = AppLogger.recordMetric("burn_critical", nowMs.toDouble())
 }
