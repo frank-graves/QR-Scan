@@ -1,12 +1,13 @@
-// app/src/main/java/org/foss/lens/infrastructure/CameraLens.kt
+// app/src/main/java/org/foss/lens/infrastructure/CameraLens.kt (modificado en analyzer)
 package org.foss.lens.infrastructure
 
 import android.Manifest
 import android.content.Context
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
-import android.os.SystemClock
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
+import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
@@ -20,9 +21,11 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.suspendCancellableCoroutine
 import java.util.concurrent.Executors
+import java.util.concurrent.atomic.AtomicInteger
 import kotlin.coroutines.resume
 import org.foss.lens.BuildConfig
 import org.foss.lens.domain.ScanState
+import org.foss.lens.observability.GoldenSignals
 
 class CameraLens(
     private val context: Context,
@@ -31,8 +34,9 @@ class CameraLens(
 ) : Lens {
     private var cameraProvider: ProcessCameraProvider? = null
     private val analyzerExecutor = Executors.newSingleThreadExecutor()
-    private val cooldownMs: Long = if (BuildConfig.DEBUG) 100L else 500L
-    @Volatile private var lastAnalysisAt: Long = 0L
+    private val chaosPrefs: SharedPreferences = context.getSharedPreferences("lens_flags", Context.MODE_PRIVATE)
+    private val chaosEnabled: Boolean = BuildConfig.DEBUG && chaosPrefs.getBoolean("chaos-camera-fail", false)
+    private val frameCounter = AtomicInteger(0)
 
     override suspend fun requestPermissions(): Boolean =
         ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
@@ -52,18 +56,15 @@ class CameraLens(
             .build()
 
         val analyzer = ImageAnalysis.Analyzer { imageProxy ->
-            val now = SystemClock.elapsedRealtime()
-            if (isWithinCooldown(now, lastAnalysisAt, cooldownMs)) {
-                imageProxy.close()
-                return@Analyzer
-            }
-            lastAnalysisAt = now
             try {
-                val result = decoder.decode(imageProxy)
-                if (result != null) {
-                    trySend(ScanState.Success(result))
+                if (chaosEnabled && frameCounter.incrementAndGet() % 10 == 0) {
+                    throw IllegalStateException("chaos-camera-fail")
                 }
+                val result = decoder.decode(imageProxy)
+                GoldenSignals.analyzerOk()
+                if (result != null) trySend(ScanState.Success(result))
             } catch (e: Exception) {
+                GoldenSignals.analyzerError()
                 trySend(ScanState.Error(e, "Error en análisis"))
             } finally {
                 imageProxy.close()
@@ -79,7 +80,6 @@ class CameraLens(
         }
 
         trySend(ScanState.Idle)
-
         awaitClose {
             provider.unbindAll()
             cameraProvider = null
@@ -98,10 +98,5 @@ class CameraLens(
                 try { cont.resume(get()) } catch (e: Exception) { cont.resumeWith(Result.failure(e)) }
             }
         }, ContextCompat.getMainExecutor(context))
-    }
-
-    companion object {
-        internal fun isWithinCooldown(now: Long, last: Long, cooldown: Long): Boolean =
-            now - last < cooldown
     }
 }

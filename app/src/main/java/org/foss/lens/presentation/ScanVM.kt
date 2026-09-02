@@ -1,4 +1,4 @@
-// org/foss/lens/presentation/ScanVM.kt
+// app/src/main/java/org/foss/lens/presentation/ScanVM.kt
 package org.foss.lens.presentation
 
 import androidx.lifecycle.ViewModel
@@ -8,7 +8,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import org.foss.lens.domain.Archive
-import org.foss.lens.domain.Codex
 import org.foss.lens.domain.ScanState
 import org.foss.lens.infrastructure.Lens
 
@@ -18,17 +17,6 @@ class ScanVM(
 ) : ViewModel() {
     private val _state = MutableStateFlow<ScanState>(ScanState.Idle)
     val state: StateFlow<ScanState> = _state.asStateFlow()
-
-    private val _permissionGranted = MutableStateFlow(false)
-    val permissionGranted: StateFlow<Boolean> = _permissionGranted.asStateFlow()
-
-    fun requestPermissions() {
-        viewModelScope.launch {
-            val granted = lens.requestPermissions()
-            _permissionGranted.value = granted
-            if (granted) startScanning()
-        }
-    }
 
     fun startScanning() {
         viewModelScope.launch {

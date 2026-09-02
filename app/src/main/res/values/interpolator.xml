@@ -1,9 +1,8 @@
 <!-- res/values/interpolator.xml -->
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
     <pathInterpolator
         android:name="spring"
-        xmlns:android="http://schemas.android.com/apk/res/android"
         android:controlX1="0.34"
         android:controlY1="1.56"
         android:controlX2="0.64"
