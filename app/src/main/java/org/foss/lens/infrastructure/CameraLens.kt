@@ -1,3 +1,4 @@
+// app/src/main/java/org/foss/lens/infrastructure/CameraLens.kt
 package org.foss.lens.infrastructure
 
 import android.Manifest
@@ -104,8 +105,16 @@ class CameraLens(
     private suspend fun <T> ListenableFuture<T>.await(): T = suspendCancellableCoroutine { cont ->
         addListener({
             if (cont.isActive) {
-                try { cont.resume(get()) } catch (e: Exception) { cont.resumeWith(Result.failure(e)) }
+                try {
+                    cont.resume(get())
+                } catch (e: Exception) {
+                    cont.resumeWith(Result.failure(e))
+                }
             }
         }, ContextCompat.getMainExecutor(context))
+    }
+
+    companion object {
+        fun isWithinCooldown(now: Long, last: Long, cooldown: Long): Boolean = (now - last) <= cooldown
     }
 }
