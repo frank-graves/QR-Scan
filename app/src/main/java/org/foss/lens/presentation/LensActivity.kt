@@ -1,3 +1,4 @@
+// app/src/main/java/org/foss/lens/presentation/LensActivity.kt
 package org.foss.lens.presentation
 
 import android.Manifest
@@ -8,8 +9,10 @@ import android.view.animation.PathInterpolator
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.launch
 import org.foss.lens.R
@@ -53,14 +56,18 @@ class LensActivity : AppCompatActivity() {
         binding.historyRecycler.adapter = historyAdapter
 
         lifecycleScope.launch {
-            scanVM.state.collect { state ->
-                updateUiForState(state)
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                scanVM.state.collect { state ->
+                    updateUiForState(state)
+                }
             }
         }
 
         lifecycleScope.launch {
-            historyVM.entries.collect { entries ->
-                historyAdapter.submitList(entries)
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                historyVM.entries.collect { entries ->
+                    historyAdapter.submitList(entries)
+                }
             }
         }
 
@@ -86,6 +93,7 @@ class LensActivity : AppCompatActivity() {
                     .setDuration(300)
                     .setInterpolator(PathInterpolator(0.34f, 1.56f, 0.64f, 1f))
             }
+
             is ScanState.Detecting -> {
                 binding.statusText.text = getString(R.string.status_detecting)
                 binding.statusText.setTextColor(ContextCompat.getColor(this, R.color.textPrimary))
@@ -104,6 +112,7 @@ class LensActivity : AppCompatActivity() {
                     }
                     .start()
             }
+
             is ScanState.Success -> {
                 binding.statusText.text = getString(R.string.status_success)
                 binding.statusText.setTextColor(ContextCompat.getColor(this, R.color.textPrimary))
@@ -124,6 +133,7 @@ class LensActivity : AppCompatActivity() {
                     .start()
                 historyVM.load()
             }
+
             is ScanState.Error -> {
                 binding.statusText.text = getString(R.string.status_error, state.message ?: "Unknown")
                 binding.resultText.visibility = View.GONE

@@ -1,3 +1,4 @@
+// app/src/main/java/org/foss/lens/presentation/HistoryAdapter.kt
 package org.foss.lens.presentation
 
 import android.view.LayoutInflater
@@ -37,8 +38,6 @@ class HistoryAdapter : ListAdapter<Codex, HistoryAdapter.ViewHolder>(DiffCallbac
             oldItem.id == newItem.id
 
         override fun areContentsTheSame(oldItem: Codex, newItem: Codex): Boolean =
-            oldItem.id == newItem.id &&
-                oldItem.payload == newItem.payload &&
-                oldItem.timestamp == newItem.timestamp
+            oldItem == newItem
     }
 }
