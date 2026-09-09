@@ -7,6 +7,8 @@ plugins {
     id("org.jetbrains.kotlin.plugin.serialization") version "1.9.20"
     id("com.google.devtools.ksp") version "1.9.20-1.0.14"
     id("io.gitlab.arturbosch.detekt") version "1.23.6"
+    // Talara Motors: lee app/google-services.json y genera la config de Firebase.
+    id("com.google.gms.google-services") version "4.4.0"
 }
 
 // URL del mockAPI (colección /assets). Vacía por defecto: el sync se desactiva
@@ -148,9 +150,16 @@ dependencies {
     implementation("io.ktor:ktor-client-content-negotiation:2.3.6")
     implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.6")
 
+    // Firebase — Taller Talara Motors (Cloud Firestore, BOM 32.x: compatible compileSdk 34)
+    implementation(platform("com.google.firebase:firebase-bom:32.7.4"))
+    implementation("com.google.firebase:firebase-firestore-ktx")
+
     // DI
     implementation("io.insert-koin:koin-android:3.5.0")
     implementation("io.insert-koin:koin-androidx-compose:3.5.0")
+
+    //miscelanous
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3")
 
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.robolectric:robolectric:4.11.1")

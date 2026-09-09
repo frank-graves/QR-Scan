@@ -9,6 +9,7 @@ import org.foss.lens.data.ScanHistoryLocal
 import org.foss.lens.domain.AssetClassifier
 import org.foss.lens.domain.AssetRepository
 import org.foss.lens.domain.Codex
+import org.foss.lens.domain.vehicle.VehicleCodec
 import org.foss.lens.ui.PendingScanHolder
 import org.foss.lens.ui.ScannerEvent
 
@@ -19,6 +20,7 @@ import org.foss.lens.ui.ScannerEvent
  */
 class ScannerViewModel(
     private val classifier: AssetClassifier,
+    private val vehicleCodec: VehicleCodec,
     private val history: ScanHistoryLocal,
     private val assets: AssetRepository,
     private val pending: PendingScanHolder
@@ -42,6 +44,14 @@ class ScannerViewModel(
         if (key == lastKey && now - lastAtMs < 2_500) return null
         lastKey = key
         lastAtMs = now
+
+        // El taller primero: un QR de vehículo no debe caer al historial como
+        // "contenido genérico" ni intentar clasificarse como PC de inventario.
+        vehicleCodec.decode(codex.payload)?.let { vehicle ->
+            _state.value = UiState(statusText = "Vehículo del taller: ${vehicle.plate}", busy = true)
+            pending.offerVehicle(vehicle)
+            return ScannerEvent.OpenGarage(vehicle.plate)
+        }
 
         val asset = classifier.parse(codex.payload)
         if (asset != null) {

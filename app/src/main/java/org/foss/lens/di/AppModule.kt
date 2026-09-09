@@ -10,13 +10,19 @@ import org.foss.lens.data.local.AssetDao
 import org.foss.lens.data.local.LensDatabase
 import org.foss.lens.data.local.ScanHistoryDao
 import org.foss.lens.data.sync.AssetSyncer
+import org.foss.lens.data.vehicle.VehicleStore
 import org.foss.lens.domain.AssetClassifier
 import org.foss.lens.domain.AssetRepository
 import org.foss.lens.domain.JsonAssetClassifier
+import org.foss.lens.domain.vehicle.JsonVehicleCodec
+import org.foss.lens.domain.vehicle.VehicleCodec
+import org.foss.lens.domain.vehicle.VehicleRepository
 import org.foss.lens.infrastructure.CodexDecoder
 import org.foss.lens.infrastructure.NetworkMonitor
 import org.foss.lens.remote.AssetSyncGateway
+import org.foss.lens.remote.FirestoreVehicleGateway
 import org.foss.lens.remote.MockApiGateway
+import org.foss.lens.remote.VehicleGateway
 import org.foss.lens.ui.PendingScanHolder
 import org.foss.lens.ui.screens.AssetDetailViewModel
 import org.foss.lens.ui.screens.ConfirmAssetViewModel
@@ -24,6 +30,7 @@ import org.foss.lens.ui.screens.HistoryViewModel
 import org.foss.lens.ui.screens.InventoryViewModel
 import org.foss.lens.ui.screens.ManualAssetViewModel
 import org.foss.lens.ui.screens.ScannerViewModel
+import org.foss.lens.ui.screens.garage.GarageViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
@@ -51,14 +58,20 @@ val appModule = module {
     }
     single<AssetSyncer> { AssetSyncer(get(), get()) }
 
+    // --- Taller (Talara Motors): codec QR + Firestore, sin Room ni cola local ---
+    single<VehicleCodec> { JsonVehicleCodec() }
+    single<VehicleGateway> { FirestoreVehicleGateway() }
+    single<VehicleRepository> { VehicleStore(get()) }
+
     // --- Estado compartido UI ---
     single<PendingScanHolder> { PendingScanHolder() }
 
     // --- ViewModels ---
-    viewModel { ScannerViewModel(get(), get(), get(), get()) }
+    viewModel { ScannerViewModel(get(), get(), get(), get(), get()) }
     viewModel { ConfirmAssetViewModel(get(), get(), get()) }
     viewModel { ManualAssetViewModel(get(), get()) }
     viewModel { InventoryViewModel(get(), get()) }
     viewModel { AssetDetailViewModel(get(), get(), get()) }
     viewModel { HistoryViewModel(get()) }
+    viewModel { GarageViewModel(get(), get(), get()) }
 }

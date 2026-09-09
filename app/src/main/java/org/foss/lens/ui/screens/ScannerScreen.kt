@@ -15,16 +15,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -50,13 +45,10 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.delay
-import org.foss.lens.R
 import org.foss.lens.ScribeApplication
 import org.foss.lens.domain.ScanState
 import org.foss.lens.ui.LensRoutes
-import org.foss.lens.ui.PendingScanHolder
 import org.foss.lens.ui.ScannerEvent
-import org.foss.lens.ui.components.SyncBadge
 import org.koin.androidx.compose.koinViewModel
 
 private fun hasCameraPermission(context: android.content.Context): Boolean =
@@ -97,6 +89,15 @@ fun ScannerRoute(navController: NavHostController) {
                         }
                         is ScannerEvent.OpenExisting -> {
                             navController.navigate(LensRoutes.detail(event.serial))
+                        }
+                        is ScannerEvent.OpenGarage -> {
+                            // QR del taller: saltamos al tab Taller con la placa
+                            // ya depositada en el holder; GarageRoute la consume.
+                            navController.navigate(LensRoutes.GARAGE) {
+                                popUpTo(LensRoutes.SCANNER) { saveState = true }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
                         }
                         is ScannerEvent.Notice -> {
                             notice = event.message

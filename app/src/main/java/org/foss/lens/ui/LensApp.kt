@@ -4,6 +4,7 @@ package org.foss.lens.ui
 import android.net.Uri
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Inventory2
 import androidx.compose.material.icons.filled.QrCodeScanner
@@ -32,18 +33,20 @@ import org.foss.lens.ui.screens.HistoryRoute
 import org.foss.lens.ui.screens.InventoryRoute
 import org.foss.lens.ui.screens.ManualRoute
 import org.foss.lens.ui.screens.ScannerRoute
+import org.foss.lens.ui.screens.garage.GarageRoute
 
 object LensRoutes {
     const val SCANNER = "scanner"
     const val HISTORY = "history"
     const val INVENTORY = "inventory"
+    const val GARAGE = "garage"
     const val MANUAL = "manual"
     const val CONFIRM = "confirm"
     const val DETAIL = "detail/{serial}"
 
     fun detail(serial: String) = "detail/${Uri.encode(serial)}"
 
-    val TAB_ROUTES = setOf(SCANNER, HISTORY, INVENTORY)
+    val TAB_ROUTES = setOf(SCANNER, HISTORY, INVENTORY, GARAGE)
 }
 
 private data class TabSpec(val route: String, val label: String, val icon: ImageVector)
@@ -51,6 +54,7 @@ private data class TabSpec(val route: String, val label: String, val icon: Image
 private val tabs = listOf(
     TabSpec(LensRoutes.SCANNER, "Escanear", Icons.Filled.QrCodeScanner),
     TabSpec(LensRoutes.INVENTORY, "Inventario", Icons.Filled.Inventory2),
+    TabSpec(LensRoutes.GARAGE, "Taller", Icons.Filled.Build),
     TabSpec(LensRoutes.HISTORY, "Historial", Icons.Filled.History)
 )
 
@@ -97,6 +101,7 @@ fun LensApp() {
             composable(LensRoutes.SCANNER) { ScannerRoute(navController) }
             composable(LensRoutes.INVENTORY) { InventoryRoute(navController) }
             composable(LensRoutes.HISTORY) { HistoryRoute() }
+            composable(LensRoutes.GARAGE) { GarageRoute() }
             composable(LensRoutes.MANUAL) { ManualRoute(navController) }
             composable(LensRoutes.CONFIRM) { ConfirmRoute(navController) }
             composable(

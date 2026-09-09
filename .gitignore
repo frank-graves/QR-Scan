@@ -14,9 +14,23 @@ keystore.properties
 *.jks
 *.keystore
 
+# --- Firebase (reemplaza con tu propio google-services.json) ---
+google-services.json
+google-services-dev.json
+google-services-prod.json
+
 # --- IDE / OS ---
 .idea/
 *.iml
+# Preferencias personales de Android Studio (nunca se comparten)
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/gradle.xml
+.idea/misc.xml
+
+# --- Logs / reportes de tooling ---
+*.log
+project-tree.txt
 .vscode/
 .DS_Store
 Thumbs.db

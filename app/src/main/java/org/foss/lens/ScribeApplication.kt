@@ -3,6 +3,7 @@ package org.foss.lens
 import android.app.Application
 import android.os.SystemClock
 import androidx.camera.core.Preview
+import com.google.firebase.FirebaseApp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -30,6 +31,11 @@ class ScribeApplication : Application(), KoinComponent {
 
     override fun onCreate() {
         super.onCreate()
+        // El taller (Firestore) arranca con la app. Sin google-services.json en
+        // app/ el plugin de Google ni siquiera deja compilar, así que esto solo
+        // puede fallar si alguien borra la configuración a mano.
+        FirebaseApp.initializeApp(this)
+
         AppLogger.init(this)
         CrashHandler.install()
 
