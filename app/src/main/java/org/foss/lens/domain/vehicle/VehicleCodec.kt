@@ -65,10 +65,13 @@ class JsonVehicleCodec(
     )
 
     override fun decode(raw: String): Vehicle? {
-        if (raw.isBlank()) return null
-        val trimmed = raw.trim()
+        // La limpieza vive en la puerta del dominio, no en cada llamador: así
+        // cubre el QR escaneado y el pegado a mano en el formulario, que hoy
+        // compartían el mismo código ciego a comillas tipográficas y NBSP.
+        val cleaned = raw.cleanQrPayload()
+        if (cleaned.isBlank()) return null
 
-        val root = runCatching { json.parseToJsonElement(trimmed).jsonObject }.getOrNull()
+        val root = runCatching { json.parseToJsonElement(cleaned).jsonObject }.getOrNull()
         if (root != null) {
             val schema = root[VehicleQrContract.SCHEMA_KEY]?.jsonPrimitive?.contentOrNull
             if (schema != VehicleQrContract.SCHEMA) return null
@@ -87,8 +90,10 @@ class JsonVehicleCodec(
             )
         }
 
-        // Sin JSON: el QR codifica solo la placa pelada.
-        val plate = PlateContract.normalize(trimmed) ?: return null
+        // Sin JSON: el QR codifica solo la placa pelada. Con placa válida bajo
+        // el schema v1 esto nunca devuelve null: el taller tiene prioridad
+        // absoluta sobre el historial en el ViewModel.
+        val plate = PlateContract.normalize(cleaned) ?: return null
         return Vehicle(plate = plate)
     }
 
@@ -98,3 +103,23 @@ class JsonVehicleCodec(
         return primitive.intOrNull ?: primitive.contentOrNull?.trim()?.toIntOrNull()
     }
 }
+
+/**
+ * Deja un payload de QR comestible antes de que cualquier decodificador lo
+ * intente. Los generadores de QR "de diseño" y los teclados móviles cuelan
+ * comillas tipográficas (“ ” ″) y espacios invisibles (NBSP, zero-width) cuando
+ * embellecen el JSON o alguien copia el texto desde un chat; un solo carácter
+ * de esos fuera de una cadena tumba `parseToJsonElement` y el escáner mandaba
+ * el QR al historial como texto suelto en vez de abrir el taller.
+ *
+ * NBSP se vuelve espacio normal (puede ser contenido legítimo); el zero-width
+ * y el BOM se eliminan del todo (nunca son contenido).
+ */
+fun String.cleanQrPayload(): String =
+    replace('\u201C', '"') // “ comilla izquierda tipográfica
+        .replace('\u201D', '"') // ” comilla derecha tipográfica
+        .replace('\u2033', '"') // ″ doble prima
+        .replace('\u00A0', ' ') // NBSP: espacio de no separación
+        .replace("\u200B", "") // zero-width space
+        .replace("\uFEFF", "") // BOM / zero-width no-break space
+        .trim()

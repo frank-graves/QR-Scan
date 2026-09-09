@@ -33,9 +33,12 @@ data class Vehicle(
 /** Reglas de la placa del taller. Compartidas por codec, gateway y UI. */
 object PlateContract {
 
-    // 2-3 letras + 3-4 dígitos. El guion es cosmético: ABC-123 y ABC123
-    // describen la misma placa y deben resolver al mismo documento.
-    private val VALID_PLATE = Regex("^[A-Z]{2,3}[0-9]{3,4}$")
+    // Dos formatos conviven en el parque automotor peruano: el clásico ABC-123
+    // (2-3 letras + 3-4 dígitos) y el nuevo A1B-234 (letra-dígito-letra +
+    // 3 dígitos) que ya llevan los autos modernos — la P1A-458 que destapó el
+    // bug es de este segundo. El guion y los espacios son cosméticos: ABC-123,
+    // ABC123 y ABC 123 describen la misma placa y resuelven al mismo documento.
+    private val VALID_PLATE = Regex("^([A-Z]{2,3}[0-9]{3,4}|[A-Z][0-9][A-Z][0-9]{3})$")
 
     /** Placa canónica (mayúsculas, sin guion ni espacios) o null si no es placa. */
     fun normalize(raw: String?): String? {
