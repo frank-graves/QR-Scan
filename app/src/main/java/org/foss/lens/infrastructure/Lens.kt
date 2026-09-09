@@ -12,4 +12,12 @@ import kotlinx.coroutines.flow.Flow
 interface Lens {
     fun start(): Flow<ScanState>
     fun stop()
+
+    /**
+     * Whether the camera permission is already granted.
+     *
+     * Part of the seam on purpose: the UI decides *how* to ask (dialog vs
+     * settings), but only the lens knows what hardware access it needs.
+     */
+    suspend fun requestPermissions(): Boolean
 }

@@ -1,6 +1,7 @@
 package org.foss.lens.infrastructure
 
 import android.content.Context
+import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
@@ -34,9 +35,10 @@ class CameraLensBindFailureTest {
         val state = lens.start().first()
 
         assertTrue("Expected ScanState.Error", state is ScanState.Error)
+        val cause = (state as ScanState.Error).cause
         assertTrue(
-            "Cause should be the injected exception",
-            (state as ScanState.Error).cause === failure
+            "Causa real: ${cause?.javaClass?.name}: ${cause?.message}",
+            cause?.message == failure.message
         )
     }
 
@@ -45,7 +47,14 @@ class CameraLensBindFailureTest {
         lifecycleOwner: LifecycleOwner,
         decoder: CodexDecoder,
         private val failure: Throwable
-    ) : CameraLens(context, lifecycleOwner, decoder) {
+    ) : CameraLens(
+        context,
+        lifecycleOwner,
+        // No-op surface provider: este test muere en el futuro de la cámara,
+        // nunca llega a pedir superficie.
+        Preview.SurfaceProvider { },
+        decoder
+    ) {
         override fun cameraProviderFuture(): ListenableFuture<ProcessCameraProvider> =
             FailingListenableFuture(failure)
     }

@@ -4,7 +4,11 @@ package org.foss.lens.observability
 class BurnRateCalculator(
     private val shortWindowMs: Long = 5 * 60_000L,
     private val longWindowMs: Long = 60 * 60_000L,
-    private val criticalFactor: Double = 14.4
+    // El ratio corto/largo no puede superar longWindow/shortWindow = 12 (cuando
+    // todos los errores caen en la ventana corta). El antiguo 14,4 era
+    // inalcanzable y la alarma nunca se disparaba; 10 sigue exigiendo una
+    // ráfaga 10x por encima de la media horaria.
+    private val criticalFactor: Double = 10.0
 ) {
     private data class Sample(val ts: Long, val error: Boolean)
     private val samples = ArrayDeque<Sample>()

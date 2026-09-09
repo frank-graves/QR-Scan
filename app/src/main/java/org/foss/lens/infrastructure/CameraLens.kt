@@ -20,16 +20,22 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withContext
+import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.coroutines.resume
 import org.foss.lens.BuildConfig
 import org.foss.lens.domain.ScanState
+import org.foss.lens.observability.AppLogger
 import org.foss.lens.observability.GoldenSignals
 
-class CameraLens(
+// Abierta a propósito: los tests subclasean CameraLens para inyectar un
+// ProcessCameraProvider que falla (CameraLensBindFailureTest).
+open class CameraLens(
     private val context: Context,
     private val lifecycleOwner: LifecycleOwner,
+    private val previewProvider: Preview.SurfaceProvider,
     private val decoder: CodexDecoder
 ) : Lens {
     private var cameraProvider: ProcessCameraProvider? = null
@@ -82,12 +88,27 @@ class CameraLens(
         }
         imageAnalysis.setAnalyzer(analyzerExecutor, analyzer)
 
-        try {
-            provider.bindToLifecycle(lifecycleOwner, CameraSelector.DEFAULT_BACK_CAMERA, preview, imageAnalysis)
-        } catch (e: Exception) {
-            close(e)
-            return@callbackFlow
+        // bindToLifecycle (y el surface del preview) deben correr en el hilo
+        // principal. El callbackFlow vive en Dispatchers.IO (flowOn) y el
+        // resume tras await() puede caer en cualquier hilo, así que forzamos
+        // Main aquí. Sin SurfaceProvider el Preview no tiene salida (pantalla
+        // negra) y en algunos dispositivos el bind puede fallar.
+        var bound = false
+        withContext(Dispatchers.Main) {
+            try {
+                preview.setSurfaceProvider(previewProvider)
+                provider.bindToLifecycle(
+                    lifecycleOwner,
+                    CameraSelector.DEFAULT_BACK_CAMERA,
+                    preview,
+                    imageAnalysis
+                )
+                bound = true
+            } catch (e: Exception) {
+                close(e)
+            }
         }
+        if (!bound) return@callbackFlow
 
         trySend(ScanState.Idle)
         awaitClose {
@@ -95,14 +116,21 @@ class CameraLens(
             cameraProvider = null
             analyzerExecutor.shutdown()
         }
-    }.catch { e -> emit(ScanState.Error(e, "Camera flow failed")) }
-        .flowOn(Dispatchers.IO)
+    }.catch { e ->
+        // Si esta excepción muere dentro del canal, la causa real se pierde y
+        // la UI solo muestra "camera flow failed". Deja el stack en el registro.
+        AppLogger.error("CameraLens", "Camera flow failed", e)
+        emit(ScanState.Error(e, e.message ?: "Camera flow failed"))
+    }.flowOn(Dispatchers.IO)
 
     override fun stop() {
         cameraProvider?.unbindAll()
     }
 
     private suspend fun <T> ListenableFuture<T>.await(): T = suspendCancellableCoroutine { cont ->
+        // Reanudamos en el hilo que completa el futuro (sin postear al main
+        // executor: en Robolectric ese looper no avanza mientras el test hace
+        // runBlocking y el test se colgaría). El bind ya salta a Main después.
         addListener({
             if (cont.isActive) {
                 try {
@@ -111,7 +139,7 @@ class CameraLens(
                     cont.resumeWith(Result.failure(e))
                 }
             }
-        }, ContextCompat.getMainExecutor(context))
+        }, Executor { it.run() })
     }
 
     companion object {

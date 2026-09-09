@@ -1,0 +1,22 @@
+# --- Android / Gradle ---
+.gradle/
+build/
+captures/
+.externalNativeBuild/
+.cxx/
+*.apk
+*.aab
+output-metadata.json
+
+# --- Machine-specific (never commit) ---
+local.properties
+keystore.properties
+*.jks
+*.keystore
+
+# --- IDE / OS ---
+.idea/
+*.iml
+.vscode/
+.DS_Store
+Thumbs.db

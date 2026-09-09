@@ -5,7 +5,7 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import java.io.File
 
-class ObservabilityDb(context: Context) :
+class ObservabilityDb(private val context: Context) :
     SQLiteOpenHelper(context.applicationContext, "lens_observability.db", null, 1) {
 
     // Batch because the analyzer calls insertMetric per frame at 30fps;
